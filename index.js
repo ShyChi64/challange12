@@ -5,7 +5,7 @@ const cTable = require('console.table');
 
 require('dotenv').config(); 
 
-const db = mysql.createConnection(
+const con = mysql.createConnection(
     {
       host: '127.0.0.1',
       // MySQL username,
@@ -17,9 +17,9 @@ const db = mysql.createConnection(
     console.log(`Connected to the employee database.`)
   );
 
-  db.connect((error)=> { 
+  con.connect((error)=> { 
     if (error) {
-        console.error("error connecting: " + err.stack);
+        console.error("error connecting: " + error.stack);
         return;
     }
   }); 
@@ -90,8 +90,8 @@ function add_department() {
                 type: 'input'
             }
         ).then(function ({ name }) {
-            connection.query(`INSERT INTO department (name) VALUES ('${name}')`, function (error, data) {
-                if (err) throw err;
+            con.query(`INSERT INTO department (name) VALUES ('${name}')`, function (error, data) {
+                if (error) throw error;
                 console.log(`Added`)
                 getJob();
             })
@@ -101,8 +101,8 @@ function add_department() {
 function add_role() {
     let departments = []
 
-    connection.query(`SELECT * FROM department`, function (err, data) {
-        if (err) throw err;
+    con.query(`SELECT * FROM department`, function (error, data) {
+        if (error) throw error;
 
         for (let i = 0; i < data.length; i++) { // Loops through and finds the name of all the departments
             departments.push(data[i].name)
@@ -131,7 +131,7 @@ function add_role() {
             ]).then(function ({ title, salary, department_id }) {
                 let index = departments.indexOf(department_id)
 
-                connection.query(`INSERT INTO role (title, salary, department_id) VALUES ('${title}', '${salary}', ${index})`, function (err, data) {
+                con.query(`INSERT INTO role (title, salary, department_id) VALUES ('${title}', '${salary}', ${index})`, function (err, data) {
                     if (err) throw err;
                     console.log(`Added`)
                     getJob();
@@ -144,16 +144,16 @@ function add_employee() {
     let employees = [];
     let roles = [];
 
-    connection.query(`SELECT * FROM role`, function (err, data) {
-        if (err) throw err;
+    con.query(`SELECT * FROM role`, function (error, data) {
+        if (error) throw error;
 
 
         for (let i = 0; i < data.length; i++) {
             roles.push(data[i].title);
         }
 
-        connection.query(`SELECT * FROM employee`, function (err, data) {
-            if (err) throw err;
+        con.query(`SELECT * FROM employee`, function (error, data) {
+            if (error) throw error;
 
             for (let i = 0; i < data.length; i++) {
                 employees.push(data[i].first_name);
@@ -192,8 +192,8 @@ function add_employee() {
                     }
                     console.log(queryText)
 
-                    connection.query(queryText, function (err, data) {
-                        if (err) throw err;
+                    connection.query(queryText, function (error, data) {
+                        if (error) throw error;
 
                         getJob();
                     })
@@ -214,8 +214,8 @@ function view() {
                 choices: ['department', 'role', 'employee'],
             }
         ).then(function ({ db }) {
-            connection.query(`SELECT * FROM ${db}`, function (error, data) {
-                if (err) throw err;
+            con.query(`SELECT * FROM ${db}`, function (error, data) {
+                if (error) throw error;
 
                 console.table(data)
                 getJob();
@@ -245,8 +245,8 @@ function update() {
 }
 
 function update_role() {
-    connection.query(`SELECT * FROM employee`, function (err, data) {
-        if (err) throw err;
+    con.query(`SELECT * FROM employee`, function (err, data) {
+        if (error) throw error;
 
         let employees = [];
         let roles = [];
@@ -255,8 +255,8 @@ function update_role() {
             employees.push(data[i].first_name)
         }
 
-        connection.query(`SELECT * FROM role`, function (err, data) {
-            if (err) throw err;
+        con.query(`SELECT * FROM role`, function (err, data) {
+            if (error) throw error;
 
             for (let i = 0; i < data.length; i++) {
                 roles.push(data[i].title)
@@ -278,8 +278,8 @@ function update_role() {
                     }
                 ]).then(function ({ employee_id, role_id }) {
                     //UPDATE `table_name` SET `column_name` = `new_value' [WHERE condition]
-                    connection.query(`UPDATE employee SET role_id = ${roles.indexOf(role_id) + 1} WHERE id = ${employees.indexOf(employee_id) + 1}`, function (err, data) {
-                        if (err) throw err;
+                    con.query(`UPDATE employee SET role_id = ${roles.indexOf(role_id) + 1} WHERE id = ${employees.indexOf(employee_id) + 1}`, function (err, data) {
+                        if (error) throw error;
 
                         getJob();
                     })
@@ -290,8 +290,8 @@ function update_role() {
 }
 
 function update_manager() {
-    connection.query(`SELECT * FROM employee`, function (err, data) {
-        if (err) throw err;
+    con.query(`SELECT * FROM employee`, function (err, data) {
+        if (error) throw error;
 
         let employees = [];
 
@@ -321,8 +321,8 @@ function update_manager() {
                     queryText = `UPDATE employee SET manager_id = ${null} WHERE id = ${employees.indexOf(employee_id) + 1}`
                 }
 
-                connection.query(queryText, function (err, data) {
-                    if (err) throw err;
+                con.query(queryText, function (err, data) {
+                    if (error) throw error;
 
                     getJob();
                 })
